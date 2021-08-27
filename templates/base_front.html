@@ -1,3 +1,4 @@
+
 {% block preamble %}
 <!doctype html>
 {% load static %}
@@ -102,7 +103,7 @@ function whatDoYouWant(requested_term)
     $.ajax({
     type: "get", 
     dataType: "html",
-    url: "{% url 'whatDoYouWant' %}?q="+requested_term,
+    url: "{% url 'whatDoYouWant' %}"+`/${requested_term}/`,
     success: function(data) {
       var display_html = data.html_from_view;
       $('#mitten-span-middle-column').html(data);
@@ -118,7 +119,7 @@ function populate_request_form(requested_term)
     $.ajax({
         type: "GET",
         dataType: "html",
-        url: "{% url 'hantera_term_request' %}?q="+requested_term,
+        url: "{% url 'hantera_term_request'%}" + `/${requested_term}/`,
         success: function(data) {
             var display_html = data.html_from_view;
             $('#mitten-span-middle-column').html(data);

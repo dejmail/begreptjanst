@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.db import models
 from pdb import set_trace
 from django.conf import settings
+from django.urls import reverse
+
 
 DEFAULT_STATUS = "Ej Påbörjad"
 
@@ -49,6 +51,10 @@ class Begrepp(models.Model):
 
     def __str__(self):
         return self.term
+
+    def get_absolute_url(self):
+        """Returns the url to access a particular instance of the model."""
+        return reverse('begrepp_förklaring', kwargs={'begrepp_id' : str(self.id)})
 
 class BegreppExternalFiles(models.Model):
     begrepp = models.ForeignKey("Begrepp", to_field='id', on_delete=models.CASCADE)

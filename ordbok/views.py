@@ -211,8 +211,7 @@ def creating_tooltip_hover_with_definition_of_all_terms_present_in_search_result
     joined_definitions_minus_nbsp = nbsp2space(joined_definitions)
     gt_brackets, lt_brackets = find_all_angular_brackets(joined_definitions_minus_nbsp)
     
-    joined_definitions_minus_nbsp = replace_non_html_brackets(joined_definitions_minus_nbsp, gt_brackets, lt_brackets)    
-    logger.info(f'joined_definitions_minus_nbsp - {joined_definitions_minus_nbsp}')
+    joined_definitions_minus_nbsp = replace_non_html_brackets(joined_definitions_minus_nbsp, gt_brackets, lt_brackets)
 
     # only here are the regex patterns created in Xlator, couple to the substitution 
     altered_strings = translator.xlat(joined_definitions_minus_nbsp)
@@ -349,9 +348,9 @@ def begrepp_view(request):
     
     return render(request, "term.html", context={'begrepp' : begrepp})
 
-def begrepp_förklaring_view(request):
+def begrepp_förklaring_view(request, begrepp_id):
 
-    url_parameter = request.GET.get("q")
+    url_parameter = begrepp_id
     if url_parameter:
         exact_term_request = retur_komplett_förklaring_custom_sql(url_parameter)
         begrepp_full = extract_columns_from_query_and_return_set(exact_term_request, 0, -5)
@@ -618,8 +617,8 @@ def return_number_of_recent_comments(request):
                              'totalcomments' : len(status_list)})
 
 def whatDoYouWant(request):
-
-    url_parameter = request.GET.get("q")
+    
+    url_parameter = request.GET.get("q")  
     if request.method == 'GET':
         
          return render(request, "whatDoYouWant.html", context={'searched_for_term' : url_parameter})    

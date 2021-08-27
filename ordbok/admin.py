@@ -118,6 +118,8 @@ class BegreppAdmin(BegreppSearchResultsAdminMixin, admin.ModelAdmin):
 
     form = BegreppForm
 
+    view_on_site = True
+
     fieldsets = [
         ['Main', {
         'fields': [('datum_skapat','begrepp_version_nummer'), ('status', 'id_vgr',)],
@@ -140,6 +142,8 @@ class BegreppAdmin(BegreppSearchResultsAdminMixin, admin.ModelAdmin):
         }]
     ]
 
+    list_display_links = ('term',)
+
     readonly_fields = ['begrepp_version_nummer','datum_skapat','beställare__beställare_epost']
 
     def beställare__beställare_epost(self, obj):
@@ -147,7 +151,8 @@ class BegreppAdmin(BegreppSearchResultsAdminMixin, admin.ModelAdmin):
 
     save_on_top = True
 
-    list_display = ('term',
+    list_display = ('id',
+                    'term',
                     'synonym',
                     'definition',
                     'utländsk_term',
