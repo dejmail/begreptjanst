@@ -61,7 +61,9 @@ text-decoration: line-through;
   margin-bottom: 0.3rem;
 }
 
-  .top-buffer-5 { margin-top:10px; }
+  .top-buffer-2 { margin-top:2px; }
+
+  .top-buffer-5 { margin-top:5px; }
 
   .top-buffer-10 { margin-top:10px; }
 

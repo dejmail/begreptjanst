@@ -13,7 +13,7 @@
     {% if form %}
     
     <h5>{{header}}</h5>
-    <form id="beställ_form" action="{% url 'hantera_term_request' %}?{{whichTemplate}}" method='POST' enctype="multipart/form-data">{% csrf_token %}
+    <form id="beställ_form" action="{% url 'hantera_term_request' 'requested_term' 'requested_action' %}?{{whichTemplate}}" method='POST' enctype="multipart/form-data">{% csrf_token %}
       
     {{ form|crispy }}
 

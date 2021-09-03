@@ -8,7 +8,7 @@
 	
 	
     <p style="font-size: 15px;">Fyll i kontaktuppgifter och avge sedan dina kommentarer om begreppet. Kommentaren bör på ett tydligt sett ange vad som avses och ska motiveras. Ange även den kontext som din kommentar härrör från. Kommentarerna kommer bearbetas av Begrepps Byrån.</p>
-    <form id="opponera_term_form" action="{% url 'opponera_term' %}", method='POST'>{% csrf_token %}
+    <form id="opponera_term_form" action="{% url 'opponera_term' 'term' %}", method='POST'>{% csrf_token %}
 		{{ opponera|crispy }}
 	
     <input type="submit" value="Skicka" id="opponera_button" class="btn btn-light-blue" style="color: white;font-family:frutiger; background-color:#006298;">

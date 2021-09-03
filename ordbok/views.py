@@ -247,22 +247,22 @@ def replace_str_index(text,index, index_shifter, replacement):
 def replace_non_html_brackets(edit_string, gt_brackets, lt_brackets):
 
     position_shifter = 0
-    logger.info(f'unedited string - {edit_string}')
-    logger.info(f'lt_brackets - {lt_brackets}')
+    logger.debug(f'unedited string - {edit_string}')
+    logger.debug(f'lt_brackets - {lt_brackets}')
     for lt_position in lt_brackets:
         edit_string = replace_str_index(edit_string, lt_position, position_shifter, '&lt;')
         logging.info(f'edited_string - {edit_string}')
         position_shifter += 3
     
-    logger.info(f'gt_brackets before index change - {gt_brackets}')
+    logger.debug(f'gt_brackets before index change - {gt_brackets}')
     
     stepped_range = [i*3-1 for i in range(1, 4)]
-    logger.info(f'stepped_range - {stepped_range}')
+    logger.debug(f'stepped_range - {stepped_range}')
     zipped_lists = zip(stepped_range, gt_brackets)
     adjusted_gt_indexes = [x + y for (x, y) in zipped_lists]
     
-    logger.info(f'gt_brackets after index change - {adjusted_gt_indexes}')
-    logger.info('replacing > brackets')
+    logger.debug(f'gt_brackets after index change - {adjusted_gt_indexes}')
+    logger.debug('replacing > brackets')
     position_shifter=0
     for gt_position in adjusted_gt_indexes:        
         edit_string = replace_str_index(edit_string, gt_position, position_shifter, '&#62;')
@@ -353,6 +353,8 @@ def begrepp_förklaring_view(request, begrepp_id):
     url_parameter = begrepp_id
     if url_parameter:
         exact_term_request = retur_komplett_förklaring_custom_sql(url_parameter)
+        if exact_term_request is None:
+            logger.error('Cannot find begrepp with id {begrepp_id')
         begrepp_full = extract_columns_from_query_and_return_set(exact_term_request, 0, -5)
         synonym_full = extract_columns_from_query_and_return_set(exact_term_request, -5, -2)
         domän_full = extract_columns_from_query_and_return_set(exact_term_request, -2, 0)
@@ -402,6 +404,7 @@ def begrepp_förklaring_view(request, begrepp_id):
                             'domän_full' : return_domän_list_dict,
                             'färg_status' : status_färg_dict}
         
+        
         html = render_to_string(template_name="term_forklaring.html", context=template_context)
         
     # else:
@@ -418,8 +421,7 @@ def begrepp_förklaring_view(request, begrepp_id):
 
     return render(request, "base.html", context={})
 
-def hantera_request_term(request):
-    
+def hantera_request_term(request, term, action):
     
     if request.method == 'POST':
         
@@ -529,17 +531,15 @@ def hantera_request_term(request):
                 return render(request, 'requestTerm.html', {'form': form,
                                                             'whichTemplate' : 'requestTerm'}, 
                                                             status=500)
-
     elif request.is_ajax():
-       #request.GET.get
-        if 'translate' in request.GET.keys():
-            form = TermRequestTranslateForm(initial={'utländsk_term' : request.GET.get("q")})
+        if 'translate' == action:
+            form = TermRequestTranslateForm(initial={'utländsk_term' : term})
             
             return render(request, 'requestTerm.html', {'form': form, 
                                                         'whichTemplate' : 'requestTranslate',
                                                         'header' : 'Önskemål om ny översättning'})
         else:
-            form = TermRequestForm(initial={'begrepp' : request.GET.get('q')})
+            form = TermRequestForm(initial={'begrepp' : term})
         return render(request, 'requestTerm.html', {'form': form, 
                                                     'whichTemplate' : 'requestTerm',
                                                     'header' : 'Önskemål om nytt begrepp'})
@@ -547,9 +547,9 @@ def hantera_request_term(request):
     else:
         return render(request, 'term.html', {})
 
-def opponera_term(request):
-
-    url_parameter = request.GET.get("q")
+def opponera_term(request, term):
+    
+    url_parameter = term
     
     if request.method == 'GET':
         inkommande_term = Begrepp(term=url_parameter)
@@ -616,13 +616,15 @@ def return_number_of_recent_comments(request):
         return JsonResponse({'unreadcomments' : len(status_list)-status_list.count("Beslutad"),
                              'totalcomments' : len(status_list)})
 
-def whatDoYouWant(request):
+def whatDoYouWant(request, term):
     
-    url_parameter = request.GET.get("q")  
-    if request.method == 'GET':
-        
-         return render(request, "whatDoYouWant.html", context={'searched_for_term' : url_parameter})    
-     # return render(request, "term.html", context={'begrepp' : begrepp})
+    #url_parameter = request.GET.get("q")  
+    
+    if request.is_ajax() == True:
+        return render(request, "whatDoYouWant.html", context={'searched_for_term' : term})
+
+    elif (request.method == 'GET') and (request.is_ajax() == False):
+        return redirect('/')
  
 def autocomplete_suggestions(request, attribute, search_term):
 

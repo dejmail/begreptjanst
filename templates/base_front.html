@@ -78,9 +78,9 @@
   {% endblock replaceable-content %}  
   {% block mitten-span %}
   <div class="row mt-10" id="mitten-span-row">
-    <div class="col-lg-2 col-md-2 col-sm-0 col-xs-0" id="mitten-span-left-column"></div>
-    <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12" id="mitten-span-middle-column"></div>
-    <div class="col-lg-2 col-md-2 col-sm-0 col-xs-0" id="mitten-span-right-column"></div>
+    <div class="col-lg-2 col-md-1 col-sm-0 col-xs-0" id="mitten-span-left-column"></div>
+    <div class="col-lg-8 col-md-10 col-sm-12 col-xs-12" id="mitten-span-middle-column"></div>
+    <div class="col-lg-2 col-md-1 col-sm-0 col-xs-0" id="mitten-span-right-column"></div>
   </div>
   {% endblock mitten-span %}   
   {% block footer %}
@@ -98,12 +98,15 @@
 {% block extra_javascript %}
 <script type="text/javascript" src="{% static '/javascript/main.js' %}"></script>
 <script>
-function whatDoYouWant(requested_term)
+function whatDoYouWant(requested_term='')
     {
     $.ajax({
     type: "get", 
     dataType: "html",
-    url: "{% url 'whatDoYouWant' %}"+`/${requested_term}/`,
+    url: "{% url 'whatDoYouWant' 'requested_term' %}",
+    beforeSend: function(xhr, settings) {
+          settings.url = settings.url.replace('requested_term', requested_term);
+        },
     success: function(data) {
       var display_html = data.html_from_view;
       $('#mitten-span-middle-column').html(data);
@@ -114,12 +117,16 @@ function whatDoYouWant(requested_term)
     })
     }
 
-function populate_request_form(requested_term)
-    {    
+function populate_request_form(requested_term='', action='')
+    {
     $.ajax({
         type: "GET",
         dataType: "html",
-        url: "{% url 'hantera_term_request'%}" + `/${requested_term}/`,
+        url: "{% url 'hantera_term_request' 'requested_term' 'requested_action' %}",
+        beforeSend: function(xhr, settings) {
+          settings.url = settings.url.replace('requested_term', requested_term);
+          settings.url = settings.url.replace('requested_action', action);
+        },
         success: function(data) {
             var display_html = data.html_from_view;
             $('#mitten-span-middle-column').html(data);
